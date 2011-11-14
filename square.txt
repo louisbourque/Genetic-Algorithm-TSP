@@ -1,0 +1,16 @@
+one 100 100
+two 100 200
+three 100 300
+four 100 400
+five 100 500
+six 200 500
+seven 300 500
+eight 400 500
+nine 500 500
+ten 500 400
+eleven 500 300
+twelve 500 200
+thirteen 500 100
+fourteen 400 100
+fifteen 300 100
+sixteen 200 100
