@@ -24,9 +24,9 @@ onmessage = function(event) {
 	switch(message.act){
 		case 'pause':
 			stop_running = true;
+			if(runTimeout) clearTimeout(runTimeout);
 			break;
 		case 'init':
-			stop_running = false;
 			config = message.data;
 			switch(config.fitness_alg){
 				case "one_max":
@@ -65,6 +65,7 @@ function runGA(){
 		if(insert_into_population(object,population))
 			i++;
 	}
+	stop_running = false;
 	iterGA();
 }
 
