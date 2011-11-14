@@ -23,7 +23,7 @@ COMP 4107 Assignment 1
 <input type="button" id="selection_toggle" value="Selection: Rank" onclick="selection_toggle();">&nbsp;&nbsp;
 <input type="button" style="color:red;" value="Stop" onclick="stop();">&nbsp;&nbsp;
 <br>
-<span id="result"></span>
+<div id="result"></div>
 <canvas id="canvas" width="900" height="600"></canvas>
 <br>
 
@@ -133,11 +133,11 @@ function handle_worker_message_onemax(data){
 		return false;
 	}
 	if(resultObj.act == "generation"){
-		$('#result').append(resultObj.data.chromosome+" ("+resultObj.data.fitness+")<br>");
+		$('#result').prepend(resultObj.data.chromosome+" ("+resultObj.data.fitness+")<br>");
 		return true;
 	}
 	if(resultObj.act == "answer"){
-		$('#result').append("Answer: "+resultObj.data.chromosome+"<br>With a fitness of "+resultObj.data.fitness);
+		$('#result').prepend("Answer: "+resultObj.data.chromosome+"<br>With a fitness of "+resultObj.data.fitness+"<br>");
 		return true;
 	}
 }
@@ -148,11 +148,11 @@ function handle_worker_message_simplemax(data){
 		return false;
 	}
 	if(resultObj.act == "generation"){
-		$('#result').append("(" + resultObj.data.chromosome[0] + "*"+ resultObj.data.chromosome[1] + "*"+ resultObj.data.chromosome[2] + "*"+ resultObj.data.chromosome[3] + "*"+ resultObj.data.chromosome[4] + ")/("+ resultObj.data.chromosome[5] + "*"+ resultObj.data.chromosome[6] + "*"+ resultObj.data.chromosome[7] + "*"+ resultObj.data.chromosome[8] + "*"+ resultObj.data.chromosome[9] +") = "+resultObj.data.fitness+"<br>");
+		$('#result').prepend("(" + resultObj.data.chromosome[0] + "*"+ resultObj.data.chromosome[1] + "*"+ resultObj.data.chromosome[2] + "*"+ resultObj.data.chromosome[3] + "*"+ resultObj.data.chromosome[4] + ")/("+ resultObj.data.chromosome[5] + "*"+ resultObj.data.chromosome[6] + "*"+ resultObj.data.chromosome[7] + "*"+ resultObj.data.chromosome[8] + "*"+ resultObj.data.chromosome[9] +") = "+resultObj.data.fitness+"<br>");
 		return true;
 	}
 	if(resultObj.act == "answer"){
-		$('#result').append("Answer: (" + resultObj.data.chromosome[0] + "*"+ resultObj.data.chromosome[1] + "*"+ resultObj.data.chromosome[2] + "*"+ resultObj.data.chromosome[3] + "*"+ resultObj.data.chromosome[4] + ")/("+ resultObj.data.chromosome[5] + "*"+ resultObj.data.chromosome[6] + "*"+ resultObj.data.chromosome[7] + "*"+ resultObj.data.chromosome[8] + "*"+ resultObj.data.chromosome[9] +") = "+resultObj.data.fitness+"<br>");
+		$('#result').prepend("Answer: (" + resultObj.data.chromosome[0] + "*"+ resultObj.data.chromosome[1] + "*"+ resultObj.data.chromosome[2] + "*"+ resultObj.data.chromosome[3] + "*"+ resultObj.data.chromosome[4] + ")/("+ resultObj.data.chromosome[5] + "*"+ resultObj.data.chromosome[6] + "*"+ resultObj.data.chromosome[7] + "*"+ resultObj.data.chromosome[8] + "*"+ resultObj.data.chromosome[9] +") = "+resultObj.data.fitness+"<br>");
 		return true;
 	}
 }
