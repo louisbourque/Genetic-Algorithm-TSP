@@ -9,23 +9,41 @@ COMP 4107 Assignment 1
 </head>
 <body>
 
-<input type="button" value="OneMax" onclick="one_max_init();">&nbsp;&nbsp;
-<input type="button" value="SimpleMax" onclick="simple_max_init();">&nbsp;&nbsp;
-<input type="button" value="Travelling Salesman" onclick="tsp_init();">&nbsp;&nbsp;
+<input type="button" value="Solve OneMax" onclick="one_max_init();">&nbsp;&nbsp;
+<input type="button" value="Solve SimpleMax" onclick="simple_max_init();">&nbsp;&nbsp;
+<input type="button" value="Solve Travelling Salesman" onclick="tsp_init();">&nbsp;&nbsp;
+<label>&nbsp;Map:
 <select id="tsp_map">
 <option>berlin52</option>
 <option>square</option>
 <option>circle</option>
 <option>random</option>
 </select>
-&nbsp;&nbsp;
-<input type="button" value="Test Crossover" onclick="test_crossover();">&nbsp;&nbsp;
-<input type="button" id="selection_toggle" value="Selection: Rank" onclick="selection_toggle();">&nbsp;&nbsp;
+</label>
+<label>&nbsp;Selection:
+<select id="selection">
+<option>rank</option>
+<option>tournament</option>
+</select>
+</label>
 <input type="button" style="color:red;" value="Stop" onclick="stop();">&nbsp;&nbsp;
+
 <br>
 <div id="result"></div>
-<canvas id="canvas" width="900" height="600"></canvas>
+<canvas id="canvas" width="900" height="600" style="display:none;"></canvas>
 <br>
+<h2>Purpose</h2>
+<p>The goal of this application is to use a genetic algorithm to find solutions to several problems, primarily the <a href='http://en.wikipedia.org/wiki/Travelling_salesman_problem'>travelling salesman problem</a>.</p>
+<h2>Genetic Algorithm</h2>
+<p>Genetic Algorithms work by creating a population of randomly generated possible solutions to a problem. Each individual competes against others to see who will reproduce based on a fitness which is determined by how close an individual is to the best solution. Two individuals are selected, and their genetic material (pieces of the possible answer) are combined randomly. As each generation passes, the solutions evolve closer to the ideal answer. The "correct" answer may never be found, but a "close enough" answer usually is.</p>
+<p>The solutions to the problems found on this page are of fixed size. For example, the solution to Simple Max has exactly 10 genes. Some problems allow the number of genes to increase without bounds. </p>
+<p>Once the optimal solution is found, the algorithm continues to search, because it doesn't know if it has found the best answer yet. In order to avoid searching forever, we limit the number of generations before stopping the search.</p>
+<h3>One Max</h3>
+<p>One Max seeks to maximize the number of 1's. A gene can be either a 1 or a 0. The best solution is one where all genes are a 1 as this would give the highest number of 1's.</p>
+<h3>Simple Max</h3>
+<p>Simple Max seeks to maximize the value of (x<sub>1</sub>*x<sub>2</sub>*x<sub>3</sub>*x<sub>4</sub>*x<sub>5</sub>)/(x<sub>6</sub>*x<sub>7</sub>*x<sub>8</sub>*x<sub>9</sub>*x<sub>10</sub>). Each x<sub>n</sub> is a gene which can have a value of 1 to 10. The best solution is (10*10*10*10*10)/(1*1*1*1*1). </p>
+<h3>Travelling Salesman Problem</h3>
+<p>The Travelling Salesman Problem seeks to find the shortest (or least expensive) path that will allow a salesman to visit each city and return home. The optimal answer for the Square, Circle and Random maps is found quickly. The Berlin52 map takes significantly longer, since there are so many possibilities.</p>
 
 
 <script type="text/javascript">
@@ -55,6 +73,7 @@ function one_max_init(){
 	config.maxGenerations = 35;
 	config.chars = ['0','1'];
 	config.unique_chromosomes = false;
+	config.selection = $('#selection').val();
 	$('#result').empty();
 	$('#canvas').hide();
 	
@@ -75,6 +94,7 @@ function simple_max_init(){
 	config.maxGenerations = 35;
 	config.chars = [1,2,3,4,5,6,7,8,9,10];
 	config.unique_chromosomes = false;
+	config.selection = $('#selection').val();
 	$('#result').empty();
 	$('#canvas').hide();
 	
@@ -97,6 +117,7 @@ function tsp_init(){
   		config.cities = new Object();
   		config.popSize = 250;
   		config.maxGenerations = 1000;
+  		config.selection = $('#selection').val();
   		var lines=data.split("\n");
   		for(var i=0; i<lines.length; i++) {
   			var parts = lines[i].split(' ');
@@ -132,8 +153,8 @@ function handle_worker_message_onemax(data){
 		console.log(resultObj.data);
 		return false;
 	}
-	if(resultObj.act == "generation"){
-		$('#result').prepend(resultObj.data.chromosome+" ("+resultObj.data.fitness+")<br>");
+	if(resultObj.act == "generation" && resultObj.gen){
+		$('#result').prepend("Best individual of generation "+resultObj.gen+": "+resultObj.data.chromosome+" ("+resultObj.data.fitness+")<br>");
 		return true;
 	}
 	if(resultObj.act == "answer"){
@@ -147,8 +168,8 @@ function handle_worker_message_simplemax(data){
 		console.log(resultObj.data);
 		return false;
 	}
-	if(resultObj.act == "generation"){
-		$('#result').prepend("(" + resultObj.data.chromosome[0] + "*"+ resultObj.data.chromosome[1] + "*"+ resultObj.data.chromosome[2] + "*"+ resultObj.data.chromosome[3] + "*"+ resultObj.data.chromosome[4] + ")/("+ resultObj.data.chromosome[5] + "*"+ resultObj.data.chromosome[6] + "*"+ resultObj.data.chromosome[7] + "*"+ resultObj.data.chromosome[8] + "*"+ resultObj.data.chromosome[9] +") = "+resultObj.data.fitness+"<br>");
+	if(resultObj.act == "generation" && resultObj.gen){
+		$('#result').prepend("Best individual of generation "+resultObj.gen+": (" + resultObj.data.chromosome[0] + "*"+ resultObj.data.chromosome[1] + "*"+ resultObj.data.chromosome[2] + "*"+ resultObj.data.chromosome[3] + "*"+ resultObj.data.chromosome[4] + ")/("+ resultObj.data.chromosome[5] + "*"+ resultObj.data.chromosome[6] + "*"+ resultObj.data.chromosome[7] + "*"+ resultObj.data.chromosome[8] + "*"+ resultObj.data.chromosome[9] +") = "+resultObj.data.fitness+"<br>");
 		return true;
 	}
 	if(resultObj.act == "answer"){
@@ -200,16 +221,6 @@ function draw_tsp(path){
 	}
 	ctx.lineTo(config.cities[path[0]].x/2,config.cities[path[0]].y/2);
 	ctx.stroke();  
-}
-
-function selection_toggle(){
-	if($('#selection_toggle').val() == "Selection: Rank"){
-		config.selection = "tournament";
-		$('#selection_toggle').val("Selection: Tournament");
-	}else{
-		config.selection = "rank";
-		$('#selection_toggle').val("Selection: Rank");
-	}
 }
 
 //pause the game
