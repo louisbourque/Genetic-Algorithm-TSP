@@ -4,4 +4,4 @@ The goal of this assignment was to implement a genetic algorithm that can be use
 
 ##Demo
 
-http://louisbourque.github.com/Genetic-Algorithm-TSP/
+http://louisbourque.ca/Genetic-Algorithm-TSP/
